@@ -15,7 +15,8 @@ while True:
             sys.exit()
 
     screen.fill('black')
-    level.draw()
+    level.run()
+    #level.draw()
 
     pygame.display.update()
     clock.tick(60)
