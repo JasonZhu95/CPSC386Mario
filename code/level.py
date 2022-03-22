@@ -3,7 +3,8 @@ from tiles import Tile
 from settings import tile_size, screen_width
 from player import Player
 from particles import ParticleEffect
-from support import import_csv_layout
+from support import import_csv_layout, import_tiled_layout
+
 
 class Level:
     def __init__(self, level_data, surface):
@@ -21,6 +22,7 @@ class Level:
         self.dust_sprite = pygame.sprite.GroupSingle()
         self.player_on_ground = False
 
+        # Setup the terrain
         terrain_layout = import_csv_layout(level_data['platforms'])
         self.terrain_sprites = self.create_tile_group(terrain_layout, 'platforms')
 
@@ -35,6 +37,7 @@ class Level:
                     y = row_index * tile_size
 
                     if type == 'platforms':
+                        platform_tile_list = import_tiled_layout('../graphics/terrain/terrain_tiles.png')
                         sprite = Tile((x, y), tile_size)
                         sprite_group.add(sprite)
         return sprite_group
