@@ -33,7 +33,7 @@ def import_tiled_layout(path):
             y_pos = row*tile_size
             new_surface = pygame.Surface((tile_size, tile_size))
             tile = pygame.Rect(x_pos, y_pos, tile_size, tile_size) # a 64x64 tile that is cut from the tiles sheet
-            new_surface.blit(surface, (x_pos, y_pos), tile)
+            new_surface.blit(surface, (0,0), tile)
             cut_tiles.append(new_surface)
     return cut_tiles
 
