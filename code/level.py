@@ -1,24 +1,40 @@
 import pygame
 from tiles import Tile, StaticTile
-from settings import tile_size, screen_width
+from settings import tile_size, screen_width, screen_height
 from player import Player
 from particles import ParticleEffect
 from support import import_csv_layout, import_tiled_layout
+from game_data import levels
 from enemy import Enemy
 
 
 class Level:
-        def __init__(self, level_data, surface):
+        def __init__(self, current_level, surface, create_info_screen):
 
             # Setting up Level
             self.display_surface = surface
             self.world_shift = 0
             self.current_x = None
 
+            self.current_level = current_level
+            level_data = levels[self.current_level]
+            level_content = level_data['content']
+            self.next_level = level_data['unlock']
+            self.create_info_screen = create_info_screen
+
+            #level display
+            self.font = pygame.font.Font(None, 40)
+            self.text_surf = self.font.render(level_content, True, 'White')
+            self.text_rect = self.text_surf.get_rect(center=(screen_width/2, screen_height/2))
+
+            # goal
+            self.goal = pygame.sprite.GroupSingle()
+
             #player
             self.player = pygame.sprite.GroupSingle()
             player_layout = import_csv_layout(level_data['player'])
             self.player_setup(player_layout)
+
 
 
             # Dust Setup
@@ -40,6 +56,7 @@ class Level:
         def run(self):
 
             self.enemy_wall_collision()
+            self.display_surface.blit(self.text_surf, self.text_rect)
 
             # platforms
             self.terrain_sprites.draw(self.display_surface)
@@ -56,6 +73,8 @@ class Level:
 
             # player
             self.player.update()
+            self.check_death()
+            self.check_win()
             self.horizontal_movement_collision()
             self.get_player_on_ground()
             self.vertical_movement_collision()
@@ -63,6 +82,9 @@ class Level:
             self.scroll_x()
             self.player.draw(self.display_surface)
 
+            # goal
+            self.goal.update(self.world_shift)
+            self.goal.draw(self.display_surface)
 
         def player_setup(self, layout):
             for row_index, row in enumerate(layout):
@@ -73,6 +95,11 @@ class Level:
                     if col == '0':
                         sprite = Player((x, y), self.display_surface, self.create_jump_particles)
                         self.player.add(sprite)
+
+                    if col == '1':
+                        goal_surface = pygame.image.load('../graphics/character/setup_tiles.png')
+                        sprite = StaticTile((x, y), tile_size,  goal_surface)
+                        self.goal.add(sprite)
 
         def create_tile_group(self, layout, type):
             sprite_group = pygame.sprite.Group()
@@ -126,9 +153,6 @@ class Level:
                     offset = pygame.math.Vector2(-10, 15)
                 fall_dust_particle = ParticleEffect(self.player.sprite.rect.midbottom - offset, 'land')
                 self.dust_sprite.add(fall_dust_particle)
-
-
-
 
         def scroll_x(self):
             player = self.player.sprite
@@ -184,6 +208,15 @@ class Level:
                 player.touching_ground = False
             if player.touching_ceiling and player.direction.y > 0:
                 player.touching_ceiling = False
+
+        def check_death(self):
+            if self.player.sprite.rect.top > screen_height:
+                self.create_info_screen(self.current_level)
+
+        def check_win(self):
+            if pygame.sprite.spritecollide(self.player.sprite, self.goal, False):
+                self.create_info_screen(self.next_level)
+
 
         # def draw(self):
         #     # Dust Particles
