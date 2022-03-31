@@ -5,7 +5,7 @@ class UI:
 
         self.display_surface = surface
 
-        self.coin = pygame.image.load('../graphics/UI/coin_ui.png')
+        self.coin = pygame.image.load('../graphics/UI/coin_ui.png').convert_alpha()
         self.coin_rect = self.coin.get_rect(topleft=(600, 40))
         self.font = pygame.font.Font(None, 30)
 

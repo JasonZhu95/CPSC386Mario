@@ -9,7 +9,7 @@ from enemy import Enemy
 
 
 class Level:
-        def __init__(self, current_level, surface, create_info_screen, update_coins):
+        def __init__(self, current_level, surface, create_info_screen, update_coins, update_health):
 
             # Setting up Level
             self.display_surface = surface
@@ -24,7 +24,6 @@ class Level:
 
             # ui
             self.update_coins = update_coins
-            self.coins = pygame.sprite.Group()
 
             # level display
             self.font = pygame.font.Font(None, 40)
@@ -37,11 +36,14 @@ class Level:
             # player
             self.player = pygame.sprite.GroupSingle()
             player_layout = import_csv_layout(level_data['player'])
-            self.player_setup(player_layout)
+            self.player_setup(player_layout, update_health)
 
             # Dust Setup
             self.dust_sprite = pygame.sprite.GroupSingle()
             self.player_on_ground = False
+
+            # explosion
+            self.explosion_sprites = pygame.sprite.Group()
 
             # Setup the terrain
             terrain_layout = import_csv_layout(level_data['platforms'])
@@ -57,7 +59,7 @@ class Level:
 
             #coins
             coins_layout = import_csv_layout(level_data['coins'])
-            self.coins_sprites = self.create_tile_group(coins_layout, 'coins')
+            self.coins = self.create_tile_group(coins_layout, 'coins')
 
         def run(self):
 
@@ -77,9 +79,13 @@ class Level:
             self.dust_sprite.update(self.world_shift)
             self.dust_sprite.draw(self.display_surface)
 
+            # explosion
+            self.explosion_sprites.update(self.world_shift)
+            self.explosion_sprites.draw(self.display_surface)
+
             #coins
-            self.coins_sprites.update(self.world_shift)
-            self.coins_sprites.draw(self.display_surface)
+            self.coins.update(self.world_shift)
+            self.coins.draw(self.display_surface)
 
             # player
             self.player.update()
@@ -92,19 +98,20 @@ class Level:
             self.scroll_x()
             self.player.draw(self.display_surface)
             self.check_coin_collision()
+            self.check_enemy_collision()
 
             # goal
             self.goal.update(self.world_shift)
             self.goal.draw(self.display_surface)
 
-        def player_setup(self, layout):
+        def player_setup(self, layout, update_health):
             for row_index, row in enumerate(layout):
                 for col_index, col in enumerate(row):
                     x = col_index * tile_size
                     y = row_index * tile_size
 
                     if col == '0':
-                        sprite = Player((x, y), self.display_surface, self.create_jump_particles)
+                        sprite = Player((x, y), self.display_surface, self.create_jump_particles, update_health)
                         self.player.add(sprite)
 
                     if col == '1':
@@ -136,7 +143,7 @@ class Level:
                             sprite = Tile((x, y), tile_size)
                             sprite_group.add(sprite)
 
-                        if type == 'constraints':
+                        if type == 'coins':
                             sprite = Tile((x, y), tile_size)
                             sprite_group.add(sprite)
             return sprite_group
@@ -233,10 +240,28 @@ class Level:
                 self.create_info_screen(self.next_level)
 
         def check_coin_collision(self):
-            collided_coins = pygame.sprite.spritecollide(self.player.sprite, self.coins_sprites, True)
+            collided_coins = pygame.sprite.spritecollide(self.player.sprite, self.coins, True)
             if collided_coins:
                 for coin in collided_coins:
                     self.update_coins(1)
+
+        def check_enemy_collision(self):
+            enemy_collisions = pygame.sprite.spritecollide(self.player.sprite, self.enemy_sprites, False)
+
+            if enemy_collisions:
+                for enemy in enemy_collisions:
+                    enemy_center = enemy.rect.centery
+                    enemy_top = enemy.rect.top
+                    player_bottom = self.player.sprite.rect.bottom
+                    if enemy_top < player_bottom < enemy_center and self.player.sprite.direction.y >= 0:
+                        self.player.sprite.direction.y = -15
+                        explosion_sprite = ParticleEffect(enemy_center, 'explosion')
+                        self.explosion_sprites.add(explosion_sprite)
+                        enemy.kill()
+                    else:
+                         self.player.sprite.take_dmg(-1)
+
+
 
 
         # def draw(self):
