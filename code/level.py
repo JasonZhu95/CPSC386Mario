@@ -9,7 +9,7 @@ from enemy import Enemy
 
 
 class Level:
-        def __init__(self, current_level, surface, create_info_screen):
+        def __init__(self, current_level, surface, create_info_screen, update_coins):
 
             # Setting up Level
             self.display_surface = surface
@@ -22,7 +22,11 @@ class Level:
             self.next_level = level_data['unlock']
             self.create_info_screen = create_info_screen
 
-            #level display
+            # ui
+            self.update_coins = update_coins
+            self.coins = pygame.sprite.Group()
+
+            # level display
             self.font = pygame.font.Font(None, 40)
             self.text_surf = self.font.render(level_content, True, 'White')
             self.text_rect = self.text_surf.get_rect(center=(screen_width/2, screen_height/2))
@@ -30,12 +34,10 @@ class Level:
             # goal
             self.goal = pygame.sprite.GroupSingle()
 
-            #player
+            # player
             self.player = pygame.sprite.GroupSingle()
             player_layout = import_csv_layout(level_data['player'])
             self.player_setup(player_layout)
-
-
 
             # Dust Setup
             self.dust_sprite = pygame.sprite.GroupSingle()
@@ -52,6 +54,10 @@ class Level:
             #constraints
             constraint_layout = import_csv_layout(level_data['constraints'])
             self.constraint_sprites = self.create_tile_group(constraint_layout, 'constraints')
+
+            #coins
+            coins_layout = import_csv_layout(level_data['coins'])
+            self.coins_sprites = self.create_tile_group(coins_layout, 'coins')
 
         def run(self):
 
@@ -71,6 +77,10 @@ class Level:
             self.dust_sprite.update(self.world_shift)
             self.dust_sprite.draw(self.display_surface)
 
+            #coins
+            self.coins_sprites.update(self.world_shift)
+            self.coins_sprites.draw(self.display_surface)
+
             # player
             self.player.update()
             self.check_death()
@@ -81,6 +91,7 @@ class Level:
             self.create_landing_dust()
             self.scroll_x()
             self.player.draw(self.display_surface)
+            self.check_coin_collision()
 
             # goal
             self.goal.update(self.world_shift)
@@ -119,6 +130,10 @@ class Level:
 
                         if type == 'enemies':
                             sprite = Enemy((x, y), tile_size)
+                            sprite_group.add(sprite)
+
+                        if type == 'constraints':
+                            sprite = Tile((x, y), tile_size)
                             sprite_group.add(sprite)
 
                         if type == 'constraints':
@@ -216,6 +231,12 @@ class Level:
         def check_win(self):
             if pygame.sprite.spritecollide(self.player.sprite, self.goal, False):
                 self.create_info_screen(self.next_level)
+
+        def check_coin_collision(self):
+            collided_coins = pygame.sprite.spritecollide(self.player.sprite, self.coins_sprites, True)
+            if collided_coins:
+                for coin in collided_coins:
+                    self.update_coins(1)
 
 
         # def draw(self):

@@ -5,6 +5,7 @@ level_0 = {
         'enemies': '../levels/0/level_0_Enemies.csv',
         'constraints': '../levels/0/level_0_Constraints.csv',
         'background': '../levels/0/level_0_Background.csv',
+        'coins': '../levels/0/level_0_Coins.csv',
         'content': 'this is level 0',
         'unlock': 1
         }
@@ -15,6 +16,7 @@ level_1 = {
         'enemies': '../levels/1/level_1_Enemies.csv',
         'constraints': '../levels/1/level_1_Constraints.csv',
         'background': '../levels/1/level_1_Background.csv',
+        'coins': '../levels/1/level_1_Coins.csv',
         'content': 'this is level 1',
         'unlock': 2
 }
