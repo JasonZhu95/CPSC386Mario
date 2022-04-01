@@ -13,7 +13,7 @@ class ParticleEffect(pygame.sprite.Sprite):
         if type == 'explosion':
             self.frames = import_folder('../graphics/character/dust_particles/land')
         self.image = self.frames[self.frame_index]
-        self.rect = self.image.get_rect(center = pos)
+        self.rect = self.image.get_rect(center=pos)
 
     def animate(self):
         self.frame_index += self.animation_speed
