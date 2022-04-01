@@ -45,6 +45,12 @@ class Level:
             player_layout = import_csv_layout(level_data['player'])
             self.player_setup(player_layout, update_health, cur_health)
 
+            # flower and mushroom
+            self.flowers = pygame.sprite.Group()
+            self.mushrooms = pygame.sprite.Group()
+            powerups_layout = import_csv_layout(level_data['powerups'])
+            self.powerups_setup(powerups_layout)
+
             # Dust Setup
             self.dust_sprite = pygame.sprite.GroupSingle()
             self.player_on_ground = False
@@ -55,6 +61,10 @@ class Level:
             # Setup the terrain
             terrain_layout = import_csv_layout(level_data['platforms'])
             self.terrain_sprites = self.create_tile_group(terrain_layout, 'platforms')
+
+            # background setup
+            background_layout = import_csv_layout(level_data['background'])
+            self.background_sprites = self.create_tile_group(background_layout, 'background')
 
             #setup enemies
             enemy_layout = import_csv_layout(level_data['enemies'])
@@ -68,13 +78,8 @@ class Level:
             coins_layout = import_csv_layout(level_data['coins'])
             self.coins = self.create_tile_group(coins_layout, 'coins')
 
-            # flower
-            flower_layout = import_csv_layout(level_data['flower'])
-            self.flowers = self.create_tile_group(flower_layout, 'flower')
 
-            # mushroom
-            mushroom_layout = import_csv_layout(level_data['mushroom'])
-            self.mushrooms = self.create_tile_group(mushroom_layout, 'mushroom')
+
 
         def run(self):
 
@@ -88,6 +93,9 @@ class Level:
             # platforms
             self.terrain_sprites.draw(self.display_surface)
             self.terrain_sprites.update(self.world_shift)
+
+            # background
+            self.background_sprites.draw(self.display_surface)
 
             # enemy and constraints
             self.enemy_sprites.update(self.world_shift)
@@ -144,6 +152,23 @@ class Level:
                         sprite = StaticTile((x, y), tile_size,  goal_surface)
                         self.goal.add(sprite)
 
+        def powerups_setup(self, layout):
+            for row_index, row in enumerate(layout):
+                for col_index, col in enumerate(row):
+                    x = col_index * tile_size
+                    y = row_index * tile_size
+
+                    if col == '0':
+                        mushroom_surface = pygame.image.load('../graphics/powerups/1UP_Mushroom.png')
+                        sprite = StaticTile((x, y), tile_size, mushroom_surface)
+                        self.mushrooms.add(sprite)
+
+
+                    if col == '1':
+                        flower_surface = pygame.image.load('../graphics/powerups/Fire_Flower.png')
+                        sprite = StaticTile((x, y), tile_size,  flower_surface)
+                        self.flowers.add(sprite)
+
         def create_tile_group(self, layout, type):
             sprite_group = pygame.sprite.Group()
 
@@ -164,20 +189,20 @@ class Level:
                             sprite = Enemy((x, y), tile_size)
                             sprite_group.add(sprite)
 
+                        if type == 'background':
+                            background_tile_list = import_tiled_layout('../graphics/terrain/terrain_tiles.png')
+                            tile_surface = background_tile_list[int(col)]  # get the tile for the current column value
+                            sprite = StaticTile((x, y), tile_size, tile_surface)
+                            sprite_group.add(sprite)
+
                         if type == 'constraints':
                             sprite = Tile((x, y), tile_size)
                             sprite_group.add(sprite)
 
                         if type == 'coins':
-                            sprite = Tile((x, y), tile_size)
-                            sprite_group.add(sprite)
-
-                        if type == 'flower':
-                            sprite = Tile((x, y), tile_size)
-                            sprite_group.add(sprite)
-
-                        if type == 'mushroom':
-                            sprite = Tile((x, y), tile_size)
+                            coins_tile_list = import_tiled_layout('../graphics/terrain/terrain_tiles.png')
+                            tile_surface = coins_tile_list[int(col)]  # get the tile for the current column value
+                            sprite = StaticTile((x, y), tile_size, tile_surface)
                             sprite_group.add(sprite)
 
             return sprite_group

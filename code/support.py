@@ -23,7 +23,7 @@ def import_csv_layout(path):
 
 # cut the tiles from the sprite sheet into an array of 64x64 tiles
 def import_tiled_layout(path):
-    surface = pygame.image.load(path).convert_alpha()
+    surface = pygame.image.load(path)
     tile_x = int(surface.get_size()[0]/tile_size)
     tile_y = int(surface.get_size()[1]/tile_size)
     cut_tiles = []

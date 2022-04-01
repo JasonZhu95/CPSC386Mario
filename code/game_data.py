@@ -6,8 +6,7 @@ level_0 = {
         'constraints': '../levels/0/level_0_Constraints.csv',
         'background': '../levels/0/level_0_Background.csv',
         'coins': '../levels/0/level_0_Coins.csv',
-        'flower': '../levels/0/level_0_Flower.csv',
-        'mushroom': '../levels/0/level_0_Mushroom.csv',
+        'powerups': '../levels/0/level_0_Powerups.csv',
         'content': 'this is level 0',
         'unlock': 1
 }
@@ -19,8 +18,7 @@ level_1 = {
         'constraints': '../levels/1/level_1_Constraints.csv',
         'background': '../levels/1/level_1_Background.csv',
         'coins': '../levels/1/level_1_Coins.csv',
-        'flower': '../levels/1/level_1_Flower.csv',
-        'mushroom': '../levels/1/level_1_Mushroom.csv',
+        'powerups': '../levels/1/level_1_Powerups.csv',
         'content': 'this is level 1',
         'unlock': 2
 }
