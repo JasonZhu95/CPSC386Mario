@@ -9,7 +9,7 @@ from enemy import Enemy
 
 
 class Level:
-        def __init__(self, current_level, surface, create_info_screen, update_coins, update_health):
+        def __init__(self, current_level, surface, create_info_screen, update_coins, update_health, cur_health):
 
             # Setting up Level
             self.display_surface = surface
@@ -41,7 +41,7 @@ class Level:
             # player
             self.player = pygame.sprite.GroupSingle()
             player_layout = import_csv_layout(level_data['player'])
-            self.player_setup(player_layout, update_health)
+            self.player_setup(player_layout, update_health, cur_health)
 
             # Dust Setup
             self.dust_sprite = pygame.sprite.GroupSingle()
@@ -109,14 +109,14 @@ class Level:
             self.goal.update(self.world_shift)
             self.goal.draw(self.display_surface)
 
-        def player_setup(self, layout, update_health):
+        def player_setup(self, layout, update_health, cur_health):
             for row_index, row in enumerate(layout):
                 for col_index, col in enumerate(row):
                     x = col_index * tile_size
                     y = row_index * tile_size
 
                     if col == '0':
-                        sprite = Player((x, y), self.display_surface, self.create_jump_particles, update_health)
+                        sprite = Player((x, y), self.display_surface, self.create_jump_particles, update_health, cur_health)
                         self.player.add(sprite)
 
                     if col == '1':

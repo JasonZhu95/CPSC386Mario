@@ -24,7 +24,7 @@ class Game:
 
 
     def create_level(self, current_level):
-        self.level = Level(current_level, screen, self.create_info_screen, self.update_coins, self.update_health)
+        self.level = Level(current_level, screen, self.create_info_screen, self.update_coins, self.update_health, self.cur_health)
         self.status = 'level'
         self.level_bg_music.play(loops=-1)
 

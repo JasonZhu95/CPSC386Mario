@@ -3,7 +3,7 @@ from support import import_folder
 from math import sin
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, surface, create_jump_particles, update_health):
+    def __init__(self, pos, surface, create_jump_particles, update_health, cur_health):
         super().__init__()
         self.import_character_assets()
         self.frame_index = 0
@@ -12,6 +12,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft = pos)
 
         # health
+        self.cur_health = cur_health
         self.update_health = update_health
         self.invincible = False
         self.invincible_duration = 400
@@ -31,7 +32,7 @@ class Player(pygame.sprite.Sprite):
         self.jump_speed = -16
 
         # Player Status
-        self.status = 'idle'
+        self.status = 'idleSmall'
         self.facing_direction = True
         self.touching_ground = False
         self.touching_ceiling = False
@@ -43,7 +44,9 @@ class Player(pygame.sprite.Sprite):
 
     def import_character_assets(self):
         character_path = '../graphics/character/'
-        self.animations = {'idle':[],'run':[],'jump':[],'fall':[]}
+        self.animations = {'idle':[],'run':[],'jump':[],'fall':[],'idleSmall':[],
+                           'runSmall':[],'jumpSmall':[],'fallSmall':[],'idleFire':[],
+                           'runFire':[],'jumpFire':[],'fallFire':[],'fire':[]}
 
         for animation in self.animations.keys():
             full_path = character_path + animation
@@ -86,7 +89,7 @@ class Player(pygame.sprite.Sprite):
             self.rect = self.image.get_rect(midtop = self.rect.midtop)
 
     def run_dust_animation(self):
-        if self.status == 'run' and self.touching_ground:
+        if (self.status == 'run' or self.status == 'runSmall' or self.status == 'runFire') and self.touching_ground:
             self.dust_frame_index += self.dust_animation_speed
             if self.dust_frame_index >= len(self.dust_run_particles):
                 self.dust_frame_index = 0
@@ -119,14 +122,34 @@ class Player(pygame.sprite.Sprite):
 
     def get_status(self):
         if self.direction.y < 0:
-            self.status = 'jump'
+            if self.cur_health == 1:
+                self.status = 'jumpSmall'
+            if self.cur_health == 2:
+                self.status = 'jump'
+            if self.cur_health == 3:
+                self.status = 'jumpFire'
         elif self.direction.y > 1:
-            self.status = 'fall'
+            if self.cur_health == 1:
+                self.status = 'fallSmall'
+            if self.cur_health == 2:
+                self.status = 'fall'
+            if self.cur_health == 3:
+                self.status = 'fallFire'
         else:
             if self.direction.x != 0:
-                self.status = 'run'
+                if self.cur_health == 1:
+                    self.status = 'runSmall'
+                if self.cur_health == 2:
+                    self.status = 'run'
+                if self.cur_health == 3:
+                    self.status = 'runFire'
             else:
-                self.status = 'idle'
+                if self.cur_health == 1:
+                    self.status = 'idleSmall'
+                if self.cur_health == 2:
+                    self.status = 'idle'
+                if self.cur_health == 3:
+                    self.status = 'idleFire'
 
     def apply_gravity(self):
         self.direction.y += self.gravity
@@ -139,6 +162,7 @@ class Player(pygame.sprite.Sprite):
     def take_dmg(self, amount):
         if not self.invincible:
             print("damage taken")
+            self.cur_health = self.cur_health - 1
             self.update_health(amount)
             self.invincible = True
             self.hurt_time = pygame.time.get_ticks()
