@@ -20,6 +20,8 @@ class Level:
             self.coin_sound = pygame.mixer.Sound('../audio/effects/coin.wav')
             self.stomp_sound = pygame.mixer.Sound('../audio/effects/stomp.wav')
             self.hit_sound = pygame.mixer.Sound('../audio/effects/die.wav')
+            self.mushroom_sound = pygame.mixer.Sound('../audio/effects/powerup.wav')
+            self.flower_sound = pygame.mixer.Sound('../audio/effects/powerup.wav')
 
             self.current_level = current_level
             level_data = levels[self.current_level]
@@ -277,6 +279,20 @@ class Level:
                 for coin in collided_coins:
                     self.update_coins(1)
 
+        def check_mushroom_collision(self):
+            collided_mushrooms = pygame.sprite.spritecollide(self.player.sprite, self.mushrooms, True)
+            player = self.player.sprite
+            if collided_mushrooms:
+                self.mushroom_sound.play()
+                player.cur_health = 2
+
+        def check_flower_collision(self):
+            collided_flowers = pygame.sprite.spritecollide(self.player.sprite, self.flowers, True)
+            player = self.player.sprite
+            if collided_flowers:
+                self.flower_sound.play()
+                player.cur_health = 3
+
         def check_enemy_collision(self):
             enemy_collisions = pygame.sprite.spritecollide(self.player.sprite, self.enemy_sprites, False)
 
@@ -294,9 +310,6 @@ class Level:
                     else:
                          #self.player.sprite.take_dmg(-1)
                          print('damage turned off')
-
-
-
 
         # def draw(self):
         #     # Dust Particles

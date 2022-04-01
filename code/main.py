@@ -29,6 +29,7 @@ class Game:
         self.level_bg_music.play(loops=-1)
 
     def create_info_screen(self, current_level):
+        self.level_bg_music.stop()
         self.info_screen = InfoScreen(current_level, screen, self.create_level)
         self.status = 'info_screen'
 

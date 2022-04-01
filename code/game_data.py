@@ -10,7 +10,7 @@ level_0 = {
         'mushroom': '../levels/0/level_0_Mushroom.csv',
         'content': 'this is level 0',
         'unlock': 1
-        }
+}
 
 level_1 = {
         'platforms': '../levels/1/level_1_Platforms.csv',
