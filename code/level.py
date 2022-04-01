@@ -66,6 +66,14 @@ class Level:
             coins_layout = import_csv_layout(level_data['coins'])
             self.coins = self.create_tile_group(coins_layout, 'coins')
 
+            # flower
+            flower_layout = import_csv_layout(level_data['flower'])
+            self.flowers = self.create_tile_group(flower_layout, 'flower')
+
+            # mushroom
+            mushroom_layout = import_csv_layout(level_data['mushroom'])
+            self.mushrooms = self.create_tile_group(mushroom_layout, 'mushroom')
+
         def run(self):
 
             self.enemy_wall_collision()
@@ -91,6 +99,14 @@ class Level:
             #coins
             self.coins.update(self.world_shift)
             self.coins.draw(self.display_surface)
+
+            # mushroom
+            self.mushrooms.update(self.world_shift)
+            self.mushrooms.draw(self.display_surface)
+
+            # flower
+            self.flowers.update(self.world_shift)
+            self.flowers.draw(self.display_surface)
 
             # player
             self.player.update()
@@ -151,6 +167,15 @@ class Level:
                         if type == 'coins':
                             sprite = Tile((x, y), tile_size)
                             sprite_group.add(sprite)
+
+                        if type == 'flower':
+                            sprite = Tile((x, y), tile_size)
+                            sprite_group.add(sprite)
+
+                        if type == 'mushroom':
+                            sprite = Tile((x, y), tile_size)
+                            sprite_group.add(sprite)
+
             return sprite_group
 
         def enemy_wall_collision(self):
@@ -267,7 +292,8 @@ class Level:
                         self.explosion_sprites.add(explosion_sprite)
                         enemy.kill()
                     else:
-                         self.player.sprite.take_dmg(-1)
+                         #self.player.sprite.take_dmg(-1)
+                         print('damage turned off')
 
 
 
