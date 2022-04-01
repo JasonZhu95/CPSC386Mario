@@ -5,13 +5,15 @@ from info_screen import InfoScreen
 from ui import UI
 
 
-
-
 class Game:
     def __init__(self):
         self.max_health = 3
         self.cur_health = 1
         self.coins = 0
+
+        # Audio
+        self.level_bg_music = pygame.mixer.Sound('../audio/level_music.mp3')
+        self.hit_sound = pygame.mixer.Sound('../audio/effects/die.wav')
 
         # overworld creation
         self.info_screen = InfoScreen(0, screen, self.create_level)
@@ -20,9 +22,11 @@ class Game:
         # ui
         self.ui = UI(screen)
 
+
     def create_level(self, current_level):
         self.level = Level(current_level, screen, self.create_info_screen, self.update_coins, self.update_health)
         self.status = 'level'
+        self.level_bg_music.play(loops=-1)
 
     def create_info_screen(self, current_level):
         self.info_screen = InfoScreen(current_level, screen, self.create_level)
@@ -37,6 +41,8 @@ class Game:
 
     def check_game_over(self):
         if self.cur_health <= 0:
+            self.level_bg_music.stop()
+            self.hit_sound.play()
             self.cur_health = 1
             self.coins = 0
             self.info_screen = InfoScreen(0, screen, self.create_level)

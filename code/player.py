@@ -38,6 +38,9 @@ class Player(pygame.sprite.Sprite):
         self.touching_left = False
         self.touching_right = False
 
+        # Player Audio
+        self.jump_sound = pygame.mixer.Sound('../audio/effects/jump.wav')
+
     def import_character_assets(self):
         character_path = '../graphics/character/'
         self.animations = {'idle':[],'run':[],'jump':[],'fall':[]}
@@ -131,6 +134,7 @@ class Player(pygame.sprite.Sprite):
 
     def jump(self):
         self.direction.y = self.jump_speed
+        self.jump_sound.play()
 
     def take_dmg(self, amount):
         if not self.invincible:

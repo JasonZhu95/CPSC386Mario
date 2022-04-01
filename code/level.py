@@ -16,6 +16,11 @@ class Level:
             self.world_shift = 0
             self.current_x = None
 
+            # Audio Setup
+            self.coin_sound = pygame.mixer.Sound('../audio/effects/coin.wav')
+            self.stomp_sound = pygame.mixer.Sound('../audio/effects/stomp.wav')
+            self.hit_sound = pygame.mixer.Sound('../audio/effects/die.wav')
+
             self.current_level = current_level
             level_data = levels[self.current_level]
             level_content = level_data['content']
@@ -66,6 +71,10 @@ class Level:
             self.enemy_wall_collision()
             self.display_surface.blit(self.text_surf, self.text_rect)
 
+            # dust
+            self.dust_sprite.update(self.world_shift)
+            self.dust_sprite.draw(self.display_surface)
+
             # platforms
             self.terrain_sprites.draw(self.display_surface)
             self.terrain_sprites.update(self.world_shift)
@@ -74,10 +83,6 @@ class Level:
             self.enemy_sprites.update(self.world_shift)
             self.enemy_sprites.draw(self.display_surface)
             self.constraint_sprites.update(self.world_shift)
-
-            # dust
-            self.dust_sprite.update(self.world_shift)
-            self.dust_sprite.draw(self.display_surface)
 
             # explosion
             self.explosion_sprites.update(self.world_shift)
@@ -233,6 +238,7 @@ class Level:
 
         def check_death(self):
             if self.player.sprite.rect.top > screen_height:
+                self.hit_sound.play()
                 self.create_info_screen(self.current_level)
 
         def check_win(self):
@@ -242,6 +248,7 @@ class Level:
         def check_coin_collision(self):
             collided_coins = pygame.sprite.spritecollide(self.player.sprite, self.coins, True)
             if collided_coins:
+                self.coin_sound.play()
                 for coin in collided_coins:
                     self.update_coins(1)
 
@@ -254,6 +261,7 @@ class Level:
                     enemy_top = enemy.rect.top
                     player_bottom = self.player.sprite.rect.bottom
                     if enemy_top < player_bottom < enemy_center and self.player.sprite.direction.y >= 0:
+                        self.stomp_sound.play()
                         self.player.sprite.direction.y = -15
                         explosion_sprite = ParticleEffect(enemy.rect.center, 'explosion')
                         self.explosion_sprites.add(explosion_sprite)
