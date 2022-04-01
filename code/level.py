@@ -121,6 +121,8 @@ class Level:
             self.scroll_x()
             self.player.draw(self.display_surface)
             self.check_coin_collision()
+            self.check_flower_collision()
+            self.check_mushroom_collision()
             self.check_enemy_collision()
 
             # goal
@@ -281,17 +283,15 @@ class Level:
 
         def check_mushroom_collision(self):
             collided_mushrooms = pygame.sprite.spritecollide(self.player.sprite, self.mushrooms, True)
-            player = self.player.sprite
             if collided_mushrooms:
                 self.mushroom_sound.play()
-                player.cur_health = 2
+                self.player.sprite.get_mushroom()
 
         def check_flower_collision(self):
             collided_flowers = pygame.sprite.spritecollide(self.player.sprite, self.flowers, True)
-            player = self.player.sprite
             if collided_flowers:
                 self.flower_sound.play()
-                player.cur_health = 3
+                self.player.sprite.get_flower()
 
         def check_enemy_collision(self):
             enemy_collisions = pygame.sprite.spritecollide(self.player.sprite, self.enemy_sprites, False)
@@ -308,8 +308,7 @@ class Level:
                         self.explosion_sprites.add(explosion_sprite)
                         enemy.kill()
                     else:
-                         #self.player.sprite.take_dmg(-1)
-                         print('damage turned off')
+                         self.player.sprite.take_dmg(-1)
 
         # def draw(self):
         #     # Dust Particles

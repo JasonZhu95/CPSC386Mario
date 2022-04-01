@@ -29,7 +29,7 @@ class Player(pygame.sprite.Sprite):
         self.speed = 8
         self.direction = pygame.math.Vector2(0, 0)
         self.gravity = 0.8
-        self.jump_speed = -16
+        self.jump_speed = -22
 
         # Player Status
         self.status = 'idleSmall'
@@ -166,6 +166,20 @@ class Player(pygame.sprite.Sprite):
             self.update_health(amount)
             self.invincible = True
             self.hurt_time = pygame.time.get_ticks()
+
+    def get_mushroom(self):
+        if self.cur_health == 1:
+            self.cur_health = 2
+            self.update_health(1)
+
+    def get_flower(self):
+        if self.cur_health == 1:
+            self.cur_health = 3
+            self.update_health(2)
+
+        if self.cur_health == 2:
+            self.cur_health = 3
+            self.update_health(1)
 
     def invincibility_timer(self):
         if self.invincible:

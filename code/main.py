@@ -62,6 +62,7 @@ pygame.init()
 screen = pygame.display.set_mode((screen_width, screen_height))
 clock = pygame.time.Clock()
 game = Game()
+blue = pygame.Color("#6185f8")
 
 while True:
     for event in pygame.event.get():
@@ -69,7 +70,7 @@ while True:
             pygame.quit()
             sys.exit()
 
-    screen.fill('grey')
+    screen.fill(blue)
     game.run()
 
     pygame.display.update()
