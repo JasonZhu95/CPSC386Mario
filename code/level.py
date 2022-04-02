@@ -34,6 +34,7 @@ class Level:
             self.update_coins = update_coins
             self.increment_score = increment_score
 
+            self.update_health = update_health
             self.check_game_over = check_game_over
 
             # level display
