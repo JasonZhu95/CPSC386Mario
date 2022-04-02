@@ -10,7 +10,7 @@ from enemy import Enemy
 
 
 class Level:
-        def __init__(self, current_level, surface, create_info_screen, update_coins, update_health, cur_health, increment_score):
+        def __init__(self, current_level, surface, create_info_screen, update_coins, update_health, cur_health, increment_score, check_game_over):
 
             # Setting up Level
             self.display_surface = surface
@@ -33,6 +33,8 @@ class Level:
             # ui
             self.update_coins = update_coins
             self.increment_score = increment_score
+
+            self.check_game_over = check_game_over
 
             # level display
             self.font = pygame.font.Font(None, 40)
@@ -298,8 +300,9 @@ class Level:
 
         def check_death(self):
             if self.player.sprite.rect.top > screen_height:
-                self.hit_sound.play()
-                self.create_info_screen(self.current_level)
+                self.cur_health = 0
+                self.update_health(-3)
+                self.check_game_over()
 
         def check_win(self):
             if pygame.sprite.spritecollide(self.player.sprite, self.goal, False):
