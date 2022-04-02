@@ -233,7 +233,7 @@ class Fireball(pygame.sprite.Sprite):
         else:
             self.rect.x -= 5
 
-        self.rect.y += 3
+        self.rect.y += .8
 
         if self.rect.x >= 1920:
             self.kill()
