@@ -58,13 +58,15 @@ class Level:
             # explosion
             self.explosion_sprites = pygame.sprite.Group()
 
+            # background setup
+            background_layout = import_csv_layout(level_data['background'])
+            self.background_sprites = self.create_tile_group(background_layout, 'background')
+
             # Setup the terrain
             terrain_layout = import_csv_layout(level_data['platforms'])
             self.terrain_sprites = self.create_tile_group(terrain_layout, 'platforms')
 
-            # background setup
-            background_layout = import_csv_layout(level_data['background'])
-            self.background_sprites = self.create_tile_group(background_layout, 'background')
+
 
             #setup enemies
             enemy_layout = import_csv_layout(level_data['enemies'])
@@ -77,8 +79,6 @@ class Level:
             #coins
             coins_layout = import_csv_layout(level_data['coins'])
             self.coins = self.create_tile_group(coins_layout, 'coins')
-
-
 
 
         def run(self):
@@ -96,6 +96,7 @@ class Level:
 
             # background
             self.background_sprites.draw(self.display_surface)
+            self.background_sprites.update(self.world_shift)
 
             # enemy and constraints
             self.enemy_sprites.update(self.world_shift)
@@ -158,14 +159,14 @@ class Level:
                     x = col_index * tile_size
                     y = row_index * tile_size
 
-                    if col == '0':
-                        mushroom_surface = pygame.image.load('../graphics/powerups/1UP_Mushroom.png')
+                    if col == '2':
+                        mushroom_surface = pygame.image.load('../graphics/powerups/1UP_Mushroom.png').convert_alpha()
                         sprite = StaticTile((x, y), tile_size, mushroom_surface)
                         self.mushrooms.add(sprite)
 
 
-                    if col == '1':
-                        flower_surface = pygame.image.load('../graphics/powerups/Fire_Flower.png')
+                    if col == '3':
+                        flower_surface = pygame.image.load('../graphics/powerups/Fire_Flower.png').convert_alpha()
                         sprite = StaticTile((x, y), tile_size,  flower_surface)
                         self.flowers.add(sprite)
 
@@ -290,10 +291,10 @@ class Level:
             if player.touching_ceiling and player.direction.y > 0:
                 player.touching_ceiling = False
 
-        def check_death(self):
-            if self.player.sprite.rect.top > screen_height:
-                self.hit_sound.play()
-                self.create_info_screen(self.current_level)
+        def check_death(self): pass
+            # if self.player.sprite.rect.top > screen_height:
+            #     self.hit_sound.play()
+            #     self.create_info_screen(self.current_level)
 
         def check_win(self):
             if pygame.sprite.spritecollide(self.player.sprite, self.goal, False):
@@ -318,7 +319,7 @@ class Level:
                 self.flower_sound.play()
                 self.player.sprite.get_flower()
 
-        def check_enemy_collision(self):
+        def check_enemy_collisions(self):
             enemy_collisions = pygame.sprite.spritecollide(self.player.sprite, self.enemy_sprites, False)
 
             if enemy_collisions:
@@ -333,7 +334,7 @@ class Level:
                         self.explosion_sprites.add(explosion_sprite)
                         enemy.kill()
                     else:
-                         self.player.sprite.take_dmg(-1)
+                        self.player.sprite.take_damage()
 
         # def draw(self):
         #     # Dust Particles

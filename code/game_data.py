@@ -20,7 +20,7 @@ level_1 = {
         'coins': '../levels/1/level_1_Coins.csv',
         'powerups': '../levels/1/level_1_Powerups.csv',
         'content': 'this is level 1',
-        'unlock': 2
+        'unlock': 0
 }
 
 levels = {
