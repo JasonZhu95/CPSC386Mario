@@ -13,11 +13,11 @@ class InfoScreen:
 
         # level display
         self.font = pygame.font.Font(None, 40)
-        self.text_surf = self.font.render("Current Level is {0}".format(self.current_level), True, 'White')
+        self.text_surf = self.font.render("", True, 'White')
         self.text_rect = self.text_surf.get_rect(center=(screen_width / 2, screen_height / 2))
 
-        self.prompt_text_surf = self.font.render("Press Space to continue", True, 'Red')
-        self.prompt_text_rect = self.text_surf.get_rect(center=(screen_width / 2, screen_height / 2 + 300))
+        self.prompt_text_surf = self.font.render("Press Space to Start Game", True, 'White')
+        self.prompt_text_rect = self.text_surf.get_rect(center=(screen_width / 2 - 150, screen_height / 2 + 300))
 
     def input(self):
         keys = pygame.key.get_pressed()
