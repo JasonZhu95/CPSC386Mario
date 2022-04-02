@@ -244,7 +244,7 @@ class Level:
             if player_x < screen_width / 4 and direction_x < 0:
                 self.world_shift = 8
                 player.speed = 0
-            elif player_x > screen_width - (screen_width / 4) and direction_x > 0:
+            elif player_x > screen_width - (screen_width / 2) and direction_x > 0:
                 self.world_shift = -8
                 player.speed = 0
             else:
@@ -291,10 +291,10 @@ class Level:
             if player.touching_ceiling and player.direction.y > 0:
                 player.touching_ceiling = False
 
-        def check_death(self): pass
-            # if self.player.sprite.rect.top > screen_height:
-            #     self.hit_sound.play()
-            #     self.create_info_screen(self.current_level)
+        def check_death(self):
+            if self.player.sprite.rect.top > screen_height:
+                self.hit_sound.play()
+                self.create_info_screen(self.current_level)
 
         def check_win(self):
             if pygame.sprite.spritecollide(self.player.sprite, self.goal, False):
@@ -319,7 +319,7 @@ class Level:
                 self.flower_sound.play()
                 self.player.sprite.get_flower()
 
-        def check_enemy_collisions(self):
+        def check_enemy_collision(self):
             enemy_collisions = pygame.sprite.spritecollide(self.player.sprite, self.enemy_sprites, False)
 
             if enemy_collisions:
@@ -334,7 +334,7 @@ class Level:
                         self.explosion_sprites.add(explosion_sprite)
                         enemy.kill()
                     else:
-                        self.player.sprite.take_damage()
+                        self.player.sprite.take_dmg(-1)
 
         # def draw(self):
         #     # Dust Particles

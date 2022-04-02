@@ -59,7 +59,7 @@ class Game:
 
 # Pygame setup
 pygame.init()
-screen = pygame.display.set_mode((screen_width, screen_height))
+screen = pygame.display.set_mode((screen_width, screen_height), flags= pygame.SCALED)
 clock = pygame.time.Clock()
 game = Game()
 blue = pygame.Color("#6185f8")
