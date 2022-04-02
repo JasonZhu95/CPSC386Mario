@@ -18,7 +18,7 @@ class Game:
         self.hit_sound = pygame.mixer.Sound('../audio/effects/die.wav')
 
         # overworld creation
-        self.info_screen = InfoScreen(0, screen, self.create_level)
+        self.info_screen = InfoScreen(0, screen, self.create_level, win=False)
         self.status = 'info_screen'
 
         # ui
@@ -44,13 +44,13 @@ class Game:
         self.score = 0
 
     def create_level(self, current_level):
-        self.level = Level(current_level, screen, self.create_info_screen, self.update_coins, self.update_health, self.cur_health, self.increment_score, self.check_game_over)
+        self.level = Level(current_level, screen, self.create_info_screen, self.update_coins, self.update_health, self.cur_health, self.increment_score, self.check_game_over, self.create_level)
         self.status = 'level'
         self.level_bg_music.play(loops=-1)
 
-    def create_info_screen(self, current_level):
+    def create_info_screen(self, current_level, win=False):
         self.level_bg_music.stop()
-        self.info_screen = InfoScreen(current_level, screen, self.create_level)
+        self.info_screen = InfoScreen(current_level, screen, self.create_level, win=win)
         self.status = 'info_screen'
 
     def update_coins(self, amount):
@@ -67,7 +67,7 @@ class Game:
             self.cur_health = 1
             self.coins = 0
             self.reset_score()
-            self.info_screen = InfoScreen(0, screen, self.create_level)
+            self.info_screen = InfoScreen(0, screen, self.create_level, win=False)
             self.status = 'info_screen'
 
     def run(self):

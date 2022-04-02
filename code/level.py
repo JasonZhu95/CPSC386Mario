@@ -10,7 +10,7 @@ from enemy import Enemy
 
 
 class Level:
-        def __init__(self, current_level, surface, create_info_screen, update_coins, update_health, cur_health, increment_score, check_game_over):
+        def __init__(self, current_level, surface, create_info_screen, update_coins, update_health, cur_health, increment_score, check_game_over, create_level):
 
             # Setting up Level
             self.display_surface = surface
@@ -29,6 +29,7 @@ class Level:
             level_content = level_data['content']
             self.next_level = level_data['unlock']
             self.create_info_screen = create_info_screen
+            self.create_level = create_level
 
             # ui
             self.update_coins = update_coins
@@ -74,7 +75,12 @@ class Level:
             terrain_layout = import_csv_layout(level_data['platforms'])
             self.terrain_sprites = self.create_tile_group(terrain_layout, 'platforms')
 
+            # setup portals
+            portals_layout = import_csv_layout(level_data['portals'])
+            self.portals = self.create_tile_group(portals_layout, 'portals')
 
+            exit_layout = import_csv_layout(level_data['portals'])
+            self.exit_portals = self.create_tile_group(exit_layout, 'portals')
 
             #setup enemies
             enemy_layout = import_csv_layout(level_data['enemies'])
@@ -98,13 +104,13 @@ class Level:
             self.dust_sprite.update(self.world_shift)
             self.dust_sprite.draw(self.display_surface)
 
-            # platforms
-            self.terrain_sprites.draw(self.display_surface)
-            self.terrain_sprites.update(self.world_shift)
-
             # background
             self.background_sprites.draw(self.display_surface)
             self.background_sprites.update(self.world_shift)
+            
+            # platforms
+            self.terrain_sprites.draw(self.display_surface)
+            self.terrain_sprites.update(self.world_shift)
 
             # enemy and constraints
             self.enemy_sprites.update(self.world_shift)
@@ -141,10 +147,14 @@ class Level:
             self.check_flower_collision()
             self.check_mushroom_collision()
             self.check_enemy_collision()
+            self.check_enter_pipe()
 
             # goal
             self.goal.update(self.world_shift)
-            self.goal.draw(self.display_surface)
+
+            # portal
+            self.portals.update(self.world_shift)
+            self.exit_portals.update(self.world_shift)
 
         def player_setup(self, layout, update_health, cur_health):
             for row_index, row in enumerate(layout):
@@ -171,7 +181,6 @@ class Level:
                         mushroom_surface = pygame.image.load('../graphics/powerups/1UP_Mushroom.png').convert_alpha()
                         sprite = StaticTile((x, y), tile_size, mushroom_surface)
                         self.mushrooms.add(sprite)
-
 
                     if col == '3':
                         flower_surface = pygame.image.load('../graphics/powerups/Fire_Flower.png').convert_alpha()
@@ -212,6 +221,14 @@ class Level:
                             coins_tile_list = import_tiled_layout('../graphics/terrain/terrain_tiles.png')
                             tile_surface = coins_tile_list[int(col)]  # get the tile for the current column value
                             sprite = StaticTile((x, y), tile_size, tile_surface)
+                            sprite_group.add(sprite)
+
+                        if type == 'portals' and col == '2':
+                            sprite = Tile((x, y), tile_size)
+                            sprite_group.add(sprite)
+
+                        if type == 'portals' and col == '1':
+                            sprite = Tile((x, y), tile_size)
                             sprite_group.add(sprite)
 
             return sprite_group
@@ -307,7 +324,8 @@ class Level:
 
         def check_win(self):
             if pygame.sprite.spritecollide(self.player.sprite, self.goal, False):
-                self.create_info_screen(self.next_level)
+                self.create_info_screen(0, win=True)
+
 
         def check_coin_collision(self):
             collided_coins = pygame.sprite.spritecollide(self.player.sprite, self.coins, True)
@@ -330,6 +348,14 @@ class Level:
                 self.flower_sound.play()
                 self.increment_score(1000)
                 self.player.sprite.get_flower()
+
+        def check_enter_pipe(self):
+            portals = pygame.sprite.spritecollide(self.player.sprite, self.portals, False)
+            keys = pygame.key.get_pressed()
+            for portal in portals:
+                if keys[pygame.K_DOWN]:
+                    self.create_info_screen(self.next_level)
+                    break
 
         def check_enemy_collision(self):
             enemy_collisions = pygame.sprite.spritecollide(self.player.sprite, self.enemy_sprites, False)
@@ -356,21 +382,3 @@ class Level:
                     explosion_sprite2 = ParticleEffect(enemy.rect.center, 'explosion')
                     self.explosion_sprites.add(explosion_sprite2)
                     enemy.kill()
-
-        # def draw(self):
-        #     # Dust Particles
-        #     self.dust_sprite.update(self.world_shift)
-        #     self.dust_sprite.draw(self.display_surface)
-        #
-        #     # Level tiles
-        #     self.tiles.update(self.world_shift)
-        #     self.tiles.draw(self.display_surface)
-        #     self.scroll_x()
-        #
-        #     # Player
-        #     self.player.update()
-        #     self.horizontal_movement_collision()
-        #     self.get_player_on_ground()
-        #     self.vertical_movement_collision()
-        #     self.create_landing_dust()
-        #     self.player.draw(self.display_surface)
