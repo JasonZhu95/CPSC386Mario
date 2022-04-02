@@ -10,7 +10,7 @@ class Game:
         self.cur_health = 1
         self.coins = 0
         self.score = 0
-        self.font = pygame.font.SysFont('monospace', 24)
+        self.font = pygame.font.SysFont(None, 40)
 
         # Audio
         self.level_bg_music = pygame.mixer.Sound('../audio/level_music.mp3')
@@ -59,6 +59,7 @@ class Game:
             self.hit_sound.play()
             self.cur_health = 1
             self.coins = 0
+            self.reset_score()
             self.info_screen = InfoScreen(0, screen, self.create_level)
             self.status = 'info_screen'
 
