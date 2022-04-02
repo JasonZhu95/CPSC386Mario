@@ -130,6 +130,7 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_z] and self.cur_health == 3:
             if self.current_time - self.previous_time > 300:
                 self.previous_time = self.current_time
+                self.status = 'fire'
                 self.fireball_group.add(self.shoot_fireball())
 
     def get_status(self):
@@ -233,7 +234,7 @@ class Fireball(pygame.sprite.Sprite):
         else:
             self.rect.x -= 5
 
-        self.rect.y += .8
+        self.rect.y += 3
 
         if self.rect.x >= 1920:
             self.kill()
