@@ -2,6 +2,7 @@ import pygame
 from tiles import Tile, StaticTile
 from settings import tile_size, screen_width, screen_height
 from player import Player
+from player import fireball_group
 from particles import ParticleEffect
 from support import import_csv_layout, import_tiled_layout
 from game_data import levels
@@ -44,6 +45,9 @@ class Level:
             self.player = pygame.sprite.GroupSingle()
             player_layout = import_csv_layout(level_data['player'])
             self.player_setup(player_layout, update_health, cur_health)
+
+            # fireball
+            self.fireball_group = fireball_group
 
             # flower and mushroom
             self.flowers = pygame.sprite.Group()
@@ -321,6 +325,7 @@ class Level:
 
         def check_enemy_collision(self):
             enemy_collisions = pygame.sprite.spritecollide(self.player.sprite, self.enemy_sprites, False)
+            fireball_collisions = pygame.sprite.groupcollide(self.fireball_group, self.enemy_sprites, True, True)
 
             if enemy_collisions:
                 for enemy in enemy_collisions:
@@ -335,6 +340,12 @@ class Level:
                         enemy.kill()
                     else:
                         self.player.sprite.take_dmg(-1)
+
+            if fireball_collisions:
+                for enemy in fireball_collisions:
+                    explosion_sprite2 = ParticleEffect(enemy.rect.center, 'explosion')
+                    self.explosion_sprites.add(explosion_sprite2)
+                    enemy.kill()
 
         # def draw(self):
         #     # Dust Particles

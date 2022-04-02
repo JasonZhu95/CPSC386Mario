@@ -2,6 +2,8 @@ import pygame
 from support import import_folder
 from math import sin
 
+fireball_group = pygame.sprite.Group()
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, surface, create_jump_particles, update_health, cur_health):
         super().__init__()
@@ -10,6 +12,11 @@ class Player(pygame.sprite.Sprite):
         self.animation_speed = 0.15
         self.image = self.animations['idle'][self.frame_index]
         self.rect = self.image.get_rect(topleft = pos)
+        self.fireball_group = fireball_group
+
+        # FireballTimer
+        self.previous_time = pygame.time.get_ticks()
+        self.current_time = pygame.time.get_ticks()
 
         # health
         self.cur_health = cur_health
@@ -120,6 +127,11 @@ class Player(pygame.sprite.Sprite):
             self.jump()
             self.create_jump_particles(self.rect.midbottom)
 
+        if keys[pygame.K_z] and self.cur_health == 3:
+            if self.current_time - self.previous_time > 300:
+                self.previous_time = self.current_time
+                self.fireball_group.add(self.shoot_fireball())
+
     def get_status(self):
         if self.direction.y < 0:
             if self.cur_health == 1:
@@ -158,6 +170,9 @@ class Player(pygame.sprite.Sprite):
     def jump(self):
         self.direction.y = self.jump_speed
         self.jump_sound.play()
+
+    def shoot_fireball(self):
+        return Fireball(self.rect.x, self.rect.y, self.facing_direction)
 
     def take_dmg(self, amount):
         if not self.invincible:
@@ -201,3 +216,26 @@ class Player(pygame.sprite.Sprite):
         self.run_dust_animation()
         self.invincibility_timer()
         self.wave_value()
+        self.fireball_group.update()
+        self.fireball_group.draw(self.display_surface)
+        self.current_time = pygame.time.get_ticks()
+
+class Fireball(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y, facing_direction):
+        super().__init__()
+        self.image = pygame.image.load('../graphics/enemy/fireball.png')
+        self.facing_direction = facing_direction
+        self.rect = self.image.get_rect(center = (pos_x, pos_y + 60))
+
+    def update(self):
+        if self.facing_direction:
+            self.rect.x += 5
+        else:
+            self.rect.x -= 5
+
+        self.rect.y += 3
+
+        if self.rect.x >= 1920:
+            self.kill()
+        if self.rect.x <= 0:
+            self.kill()

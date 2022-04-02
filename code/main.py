@@ -1,5 +1,4 @@
 import pygame, sys
-from win32api import GetSystemMetrics
 from settings import *
 from level import Level
 from info_screen import InfoScreen

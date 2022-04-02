@@ -1,5 +1,3 @@
-from win32api import GetSystemMetrics
-
 
 level_map = [
 '                            ',
