@@ -9,6 +9,8 @@ class Game:
         self.max_health = 3
         self.cur_health = 1
         self.coins = 0
+        self.score = 0
+        self.font = pygame.font.SysFont('monospace', 24)
 
         # Audio
         self.level_bg_music = pygame.mixer.Sound('../audio/level_music.mp3')
@@ -21,9 +23,21 @@ class Game:
         # ui
         self.ui = UI(screen)
 
+    def draw_score(self, surface):
+        txt = self.font.render('Score: ' + str(self.score), True, (255, 255, 255))
+        surface.blit(txt, (0, 0))
+
+    def increment_score(self, amount):
+        self.score += amount
+
+    def return_score(self):
+        return self.score
+
+    def reset_score(self):
+        self.score = 0
 
     def create_level(self, current_level):
-        self.level = Level(current_level, screen, self.create_info_screen, self.update_coins, self.update_health, self.cur_health)
+        self.level = Level(current_level, screen, self.create_info_screen, self.update_coins, self.update_health, self.cur_health, self.increment_score)
         self.status = 'level'
         self.level_bg_music.play(loops=-1)
 
@@ -55,6 +69,8 @@ class Game:
             self.level.run()
             self.ui.show_coins(self.coins)
             self.check_game_over()
+            self.draw_score(screen)
+
 
 # Pygame setup
 pygame.init()

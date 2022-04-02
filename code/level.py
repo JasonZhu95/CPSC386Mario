@@ -10,7 +10,7 @@ from enemy import Enemy
 
 
 class Level:
-        def __init__(self, current_level, surface, create_info_screen, update_coins, update_health, cur_health):
+        def __init__(self, current_level, surface, create_info_screen, update_coins, update_health, cur_health, increment_score):
 
             # Setting up Level
             self.display_surface = surface
@@ -32,6 +32,7 @@ class Level:
 
             # ui
             self.update_coins = update_coins
+            self.increment_score = increment_score
 
             # level display
             self.font = pygame.font.Font(None, 40)
@@ -308,6 +309,7 @@ class Level:
             collided_coins = pygame.sprite.spritecollide(self.player.sprite, self.coins, True)
             if collided_coins:
                 self.coin_sound.play()
+                self.increment_score(200)
                 for coin in collided_coins:
                     self.update_coins(1)
 
@@ -315,12 +317,14 @@ class Level:
             collided_mushrooms = pygame.sprite.spritecollide(self.player.sprite, self.mushrooms, True)
             if collided_mushrooms:
                 self.mushroom_sound.play()
+                self.increment_score(1000)
                 self.player.sprite.get_mushroom()
 
         def check_flower_collision(self):
             collided_flowers = pygame.sprite.spritecollide(self.player.sprite, self.flowers, True)
             if collided_flowers:
                 self.flower_sound.play()
+                self.increment_score(1000)
                 self.player.sprite.get_flower()
 
         def check_enemy_collision(self):
@@ -333,6 +337,7 @@ class Level:
                     enemy_top = enemy.rect.top
                     player_bottom = self.player.sprite.rect.bottom
                     if enemy_top < player_bottom < enemy_center and self.player.sprite.direction.y >= 0:
+                        self.increment_score(100)
                         self.stomp_sound.play()
                         self.player.sprite.direction.y = -15
                         explosion_sprite = ParticleEffect(enemy.rect.center, 'explosion')
@@ -343,6 +348,7 @@ class Level:
 
             if fireball_collisions:
                 for enemy in fireball_collisions:
+                    self.increment_score(100)
                     explosion_sprite2 = ParticleEffect(enemy.rect.center, 'explosion')
                     self.explosion_sprites.add(explosion_sprite2)
                     enemy.kill()
