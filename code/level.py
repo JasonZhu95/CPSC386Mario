@@ -77,10 +77,10 @@ class Level:
 
             # setup portals
             portals_layout = import_csv_layout(level_data['portals'])
-            self.portals = self.create_tile_group(portals_layout, 'portals')
+            self.portals = self.create_tile_group(portals_layout, 'entry_portals')
 
             exit_layout = import_csv_layout(level_data['portals'])
-            self.exit_portals = self.create_tile_group(exit_layout, 'portals')
+            self.exit_portals = self.create_tile_group(exit_layout, 'exit_portals')
 
             #setup enemies
             enemy_layout = import_csv_layout(level_data['enemies'])
@@ -223,11 +223,11 @@ class Level:
                             sprite = StaticTile((x, y), tile_size, tile_surface)
                             sprite_group.add(sprite)
 
-                        if type == 'portals' and col == '2':
+                        if type == 'entry_portals' and col == '0':
                             sprite = Tile((x, y), tile_size)
                             sprite_group.add(sprite)
 
-                        if type == 'portals' and col == '1':
+                        if type == 'exit_portals' and col == '1':
                             sprite = Tile((x, y), tile_size)
                             sprite_group.add(sprite)
 
@@ -266,7 +266,7 @@ class Level:
             player_x = player.rect.centerx
             direction_x = player.direction.x
 
-            if player_x < screen_width / 4 and direction_x < 0:
+            if player_x < screen_width / 2 and direction_x < 0:
                 self.world_shift = 8
                 player.speed = 0
             elif player_x > screen_width - (screen_width / 2) and direction_x > 0:
