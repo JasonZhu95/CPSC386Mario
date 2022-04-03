@@ -30,7 +30,7 @@ class InfoScreen:
             self.prompt_text_rect = self.text_surf.get_rect(center=(screen_width / 2 - 150, screen_height / 2 + 300))
 
     def input(self):
-        if pygame.time.get_ticks() - self.time > 500:
+        if pygame.time.get_ticks() - self.time > 500 and self.win == False:
             self.create_level(self.current_level)
 
     def run(self):

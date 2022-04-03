@@ -15,6 +15,7 @@ class Level:
             # Setting up Level
             self.display_surface = surface
             self.world_shift = 0
+            self.total_shift = 0
             self.current_x = None
 
 
@@ -45,8 +46,9 @@ class Level:
             self.text_rect = self.text_surf.get_rect(center=(screen_width/2, screen_height/2))
 
             # goal
-            self.goal = pygame.sprite.GroupSingle()
+            self.goal = pygame.sprite.Group()
 
+            # portals
             portal_layout = import_csv_layout(level_data['portals'])
             self.portals = self.create_tile_group(portal_layout, 'entry_portals')
 
@@ -54,8 +56,8 @@ class Level:
             self.exit_portal = self.create_tile_group(exit_portal_layout, 'exit_portal')
 
             if current_level == 0 and exited_portal:
-                self.player_start = self.exit_portal.rect.topleft 
-                self.world_shift = -2000
+                self.player_start = (self.exit_portal.rect.x, self.exit_portal.rect.y)
+                self.world_shift = -500
             else:
                 self.player_start = None
 
@@ -277,13 +279,17 @@ class Level:
 
             if player_x < screen_width / 2 and direction_x < 0:
                 self.world_shift = 8
+                self.total_shift += 8
                 player.speed = 0
             elif player_x > screen_width - (screen_width / 2) and direction_x > 0:
                 self.world_shift = -8
+                self.total_shift += -8
                 player.speed = 0
             else:
                 self.world_shift = 0
                 player.speed = 8
+            print(self.total_shift)
+
 
         def horizontal_movement_collision(self):
             player = self.player.sprite
@@ -362,10 +368,9 @@ class Level:
 
             portals = pygame.sprite.spritecollide(self.player.sprite, self.portals, False)
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_DOWN]:
-                print(self.player.sprite.rect.topleft)
+
             for portal in portals:
-                if keys[pygame.K_DOWN]:
+                if keys[pygame.K_DOWN] or keys[pygame.K_RIGHT]:
                     if self.current_level == 1:
                         self.create_level(self.next_level, True)
                     else:
