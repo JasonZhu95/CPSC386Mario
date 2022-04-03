@@ -3,6 +3,7 @@ from settings import *
 from level import Level
 from info_screen import InfoScreen
 from ui import UI
+import time
 
 class Game:
     def __init__(self):
@@ -12,6 +13,8 @@ class Game:
         self.score = 0
         self.font = pygame.font.SysFont(None, 40)
         self.high_score = 0
+        self.time_left = 400
+        self.start_time = time.time()
 
         # Audio
         self.level_bg_music = pygame.mixer.Sound('../audio/level_music.mp3')
@@ -25,12 +28,31 @@ class Game:
         self.ui = UI(screen)
 
     def draw_score(self, surface):
-        txt = self.font.render('Score: ' + str(self.score), True, (255, 255, 255))
-        surface.blit(txt, (0, 0))
+        txt1 = self.font.render('Mario', True, (255, 255, 255))
+        surface.blit(txt1, (10, 10))
+        txt2 = self.font.render(str(self.score), True, (255, 255, 255))
+        surface.blit(txt2, (10, 30))
 
     def draw_high_score(self, surface):
-        txt2 = self.font.render('Current High Score: ' + str(self.high_score), True, (255, 255, 255))
-        surface.blit(txt2, (screen_width / 2 - 150, screen_height / 2))
+        txt1 = self.font.render('Current High Score: ' + str(self.high_score), True, (255, 255, 255))
+        surface.blit(txt1, (screen_width / 2 - 150, screen_height / 2))
+
+    def draw_level_count(self, surface):
+        txt1 = self.font.render('Level', True, (255, 255, 255))
+        surface.blit(txt1, (2*(screen_width / 4), 10))
+        txt2 = self.font.render('1-1', True, (255, 255, 255))
+        surface.blit(txt2, (2*(screen_width / 4) + 10, 30))
+
+    def draw_time(self, surface):
+        txt1 = self.font.render('Time', True, (255, 255, 255))
+        surface.blit(txt1, (3*(screen_width / 4), 10))
+        txt2 = self.font.render(str(self.time_left), True, (255, 255, 255))
+        surface.blit(txt2, (3*(screen_width / 4) + 10, 30))
+
+    def update_time(self):
+        if time.time() > self.start_time + 1:
+            self.time_left -= 1
+            self.start_time = time.time()
 
     def increment_score(self, amount):
         self.score += amount
@@ -80,6 +102,10 @@ class Game:
             self.ui.show_coins(self.coins)
             self.check_game_over()
             self.draw_score(screen)
+            self.draw_level_count(screen)
+            self.update_time()
+            self.draw_time(screen)
+
 
 
 # Pygame setup

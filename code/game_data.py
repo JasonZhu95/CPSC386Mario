@@ -8,7 +8,7 @@ level_0 = {
         'coins': '../levels/0/level_0_Coins.csv',
         'powerups': '../levels/0/level_0_Powerups.csv',
         'portals': '../levels/0/level_0_Portals.csv',
-        'content': 'this is level 0',
+        'content': '',
         'unlock': 1
 }
 
@@ -21,7 +21,7 @@ level_1 = {
         'coins': '../levels/1/level_1_Coins.csv',
         'powerups': '../levels/1/level_1_Powerups.csv',
         'portals': '../levels/1/level_1_Portals.csv',
-        'content': 'this is level 1',
+        'content': '',
         'unlock': 0
 }
 
