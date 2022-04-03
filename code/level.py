@@ -10,12 +10,17 @@ from enemy import Enemy
 
 
 class Level:
-        def __init__(self, current_level, surface, create_info_screen, update_coins, update_health, cur_health, increment_score, check_game_over, create_level):
+        def __init__(self, current_level, surface, create_info_screen, update_coins, update_health, cur_health, increment_score, check_game_over, create_level, exited_portal):
 
             # Setting up Level
             self.display_surface = surface
             self.world_shift = 0
             self.current_x = None
+            if current_level is 0 and exited_portal:
+                self.player_start = (936, 448)
+                self.world_shift = -500
+            else:
+                self.player_start = None
 
             # Audio Setup
             self.coin_sound = pygame.mixer.Sound('../audio/effects/coin.wav')
@@ -79,8 +84,6 @@ class Level:
             portals_layout = import_csv_layout(level_data['portals'])
             self.portals = self.create_tile_group(portals_layout, 'entry_portals')
 
-            exit_layout = import_csv_layout(level_data['portals'])
-            self.exit_portals = self.create_tile_group(exit_layout, 'exit_portals')
 
             #setup enemies
             enemy_layout = import_csv_layout(level_data['enemies'])
@@ -154,7 +157,6 @@ class Level:
 
             # portal
             self.portals.update(self.world_shift)
-            self.exit_portals.update(self.world_shift)
 
         def player_setup(self, layout, update_health, cur_health):
             for row_index, row in enumerate(layout):
@@ -162,13 +164,17 @@ class Level:
                     x = col_index * tile_size
                     y = row_index * tile_size
 
+
                     if col == '0':
-                        sprite = Player((x, y), self.display_surface, self.create_jump_particles, update_health, cur_health)
+                        if self.player_start is not None:
+                            sprite = Player(self.player_start, self.display_surface, self.create_jump_particles, update_health, cur_health)
+                        else:
+                            sprite = Player((x,y), self.display_surface, self.create_jump_particles, update_health, cur_health)
                         self.player.add(sprite)
 
+
                     if col == '1':
-                        goal_surface = pygame.image.load('../graphics/character/setup_tiles.png')
-                        sprite = StaticTile((x, y), tile_size,  goal_surface)
+                        sprite = Tile((x, y), tile_size)
                         self.goal.add(sprite)
 
         def powerups_setup(self, layout):
@@ -227,9 +233,9 @@ class Level:
                             sprite = Tile((x, y), tile_size)
                             sprite_group.add(sprite)
 
-                        if type == 'exit_portals' and col == '1':
+                        if type == 'exit_portal' and col == '1':
                             sprite = Tile((x, y), tile_size)
-                            sprite_group.add(sprite)
+                            return sprite
 
             return sprite_group
 
@@ -350,11 +356,17 @@ class Level:
                 self.player.sprite.get_flower()
 
         def check_enter_pipe(self):
+
             portals = pygame.sprite.spritecollide(self.player.sprite, self.portals, False)
             keys = pygame.key.get_pressed()
+            if keys[pygame.K_DOWN]:
+                print(self.player.sprite.rect.topleft)
             for portal in portals:
                 if keys[pygame.K_DOWN]:
-                    self.create_info_screen(self.next_level)
+                    if self.current_level == 1:
+                        self.create_level(self.next_level, True)
+                    else:
+                        self.create_level(self.next_level)
                     break
 
         def check_enemy_collision(self):

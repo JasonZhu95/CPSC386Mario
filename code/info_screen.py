@@ -19,7 +19,7 @@ class InfoScreen:
             self.text_surf = self.font.render("", True, 'White')
             self.text_rect = self.text_surf.get_rect(center=(screen_width / 2, screen_height / 2))
 
-            self.prompt_text_surf = self.font.render("Press Space to Start Game", True, 'White')
+            self.prompt_text_surf = self.font.render("Loading...", True, 'White')
             self.prompt_text_rect = self.text_surf.get_rect(center=(screen_width / 2 - 150, screen_height / 2 + 300))
         else:
             self.font = pygame.font.Font(None, 40)
@@ -30,7 +30,7 @@ class InfoScreen:
             self.prompt_text_rect = self.text_surf.get_rect(center=(screen_width / 2 - 150, screen_height / 2 + 300))
 
     def input(self):
-        if pygame.time.get_ticks() - self.time > 2000:
+        if pygame.time.get_ticks() - self.time > 500:
             self.create_level(self.current_level)
 
     def run(self):

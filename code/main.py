@@ -43,8 +43,9 @@ class Game:
             self.high_score = self.score
         self.score = 0
 
-    def create_level(self, current_level):
-        self.level = Level(current_level, screen, self.create_info_screen, self.update_coins, self.update_health, self.cur_health, self.increment_score, self.check_game_over, self.create_level)
+    def create_level(self, current_level, exited_portal = False):
+        self.level_bg_music.stop()
+        self.level = Level(current_level, screen, self.create_info_screen, self.update_coins, self.update_health, self.cur_health, self.increment_score, self.check_game_over, self.create_level, exited_portal)
         self.status = 'level'
         self.level_bg_music.play(loops=-1)
 
