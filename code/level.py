@@ -16,11 +16,7 @@ class Level:
             self.display_surface = surface
             self.world_shift = 0
             self.current_x = None
-            if current_level is 0 and exited_portal:
-                self.player_start = (936, 448)
-                self.world_shift = -500
-            else:
-                self.player_start = None
+
 
             # Audio Setup
             self.coin_sound = pygame.mixer.Sound('../audio/effects/coin.wav')
@@ -51,6 +47,18 @@ class Level:
             # goal
             self.goal = pygame.sprite.GroupSingle()
 
+            portal_layout = import_csv_layout(level_data['portals'])
+            self.portals = self.create_tile_group(portal_layout, 'entry_portals')
+
+            exit_portal_layout = import_csv_layout(level_data['portals'])
+            self.exit_portal = self.create_tile_group(exit_portal_layout, 'exit_portal')
+
+            if current_level == 0 and exited_portal:
+                self.player_start = self.exit_portal.rect.topleft 
+                self.world_shift = -2000
+            else:
+                self.player_start = None
+
             # player
             self.player = pygame.sprite.GroupSingle()
             player_layout = import_csv_layout(level_data['player'])
@@ -79,11 +87,6 @@ class Level:
             # Setup the terrain
             terrain_layout = import_csv_layout(level_data['platforms'])
             self.terrain_sprites = self.create_tile_group(terrain_layout, 'platforms')
-
-            # setup portals
-            portals_layout = import_csv_layout(level_data['portals'])
-            self.portals = self.create_tile_group(portals_layout, 'entry_portals')
-
 
             #setup enemies
             enemy_layout = import_csv_layout(level_data['enemies'])
